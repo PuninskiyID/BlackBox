@@ -33,65 +33,14 @@ void XYCurve::RollData()
     }
 }
 
-void XYCurve::XYParamPick( int curX )
+void XYCurve::XYParamPick(int curX)
 {
     if(this->GetXId() > 0 && this->GetYId() > 0)
     {
         this->curve->detach();
-        //this->curve->setPen(this->color);
         this->StepPickedData(GetXId() - 1, GetYId() - 1, curX);
         RollData();
-//        qDebug()<<"---------------------LastPos-------------------------";
-//        qDebug()<<this->lastPosCycled;
         this->curve->setSamples(this->xNorm, this->yNorm, buffSize);
-
-//        qDebug()<<"---------------------------------------------------";
-//        for(int i = 0; i < buffSize; i++)
-//        {
-//            qDebug()<<this->x[i];
-//        }
-
-//        qDebug()<<"---------------------------------------------------";
-//        for(int i = 0; i < buffSize; i++)
-//        {
-//            qDebug()<<this->y[i];
-//        }
-
-//                qDebug()<<"---------------------------------------------------";
-//                for(int i = 0; i < buffSize; i++)
-//                {
-//                    qDebug()<<this->xNorm[i];
-//                }
-
-//                qDebug()<<"---------------------------------------------------";
-//                for(int i = 0; i < buffSize; i++)
-//                {
-//                    qDebug()<<this->yNorm[i];
-//                }
-
-        static double bfx[8] = {
-                            561.546,
-                            1420.98,
-                            -1563.49,
-                            -1971.93,
-                            -1886.81,
-                            -1329.22,
-                            -439.138,
-                            561.186,
-        };
-        static double bfy[8] = {
-                            -1919.55,
-                            -1407.41,
-                            1247.2,
-                            333.914,
-                            -663.281,
-                            -1494.38,
-                            -1951.19,
-                            -1919.65
-        };
-        //this->curve->setSamples(bfx, bfy, 8);
-        //this->curve->setSamples(this->x, this->y, 8);
-
         this->curve->setPen(this->color);
         this->curve->attach(this->plot);
         this->plot->replot();
@@ -123,22 +72,17 @@ void XYCurve::StepPickedData(int idx, int idy, int curX)
     double dist = this->step->text().toDouble();
     int iNorm = 0;
     //for (int i = (curX + 1 - 128 + (X_SIZE)) % (X_SIZE); i <= (curX); i = (1 + i) % (X_SIZE))
-    for (int i = curX + 1 - 128; i <= (curX); i++)
+
+    for (int i = curX - 128; i < (curX); i++)//128
     {
-        iNorm = (i + (X_SIZE)) % (X_SIZE);
+        iNorm = (i + (X_SIZE)) % (X_SIZE); // при просмотре лога не имеет смыла сохранять предыдущий экран сэмплов, следовательно возникает визуальный баг.
         if( FindDistace(this->xydata[idx].y[iNorm],this->xydata[idy].y[iNorm],
                         this->x[(this->lastPosCycled - 1 ) % (buffSize)],
                         this->y[(this->lastPosCycled - 1 ) % (buffSize)]) > dist)
         {
-//            qDebug()<<"x1 "<<this->xydata[idx].y[i]<<" y1 "<<this->xydata[idy].y[i]<<" x2 "<<this->x[(this->lastPosCycled - 1 ) % (buffSize)]<<" y2 "<<this->y[(this->lastPosCycled - 1 ) % (buffSize)];
-//            qDebug()<<FindDistace(this->xydata[idx].y[i],this->xydata[idy].y[i],
-//                                  this->x[(this->lastPosCycled - 1 ) % (buffSize)],
-//                                  this->y[(this->lastPosCycled - 1 ) % (buffSize)])<<" "<<dist;
             this->x[this->lastPosCycled] = this->xydata[idx].y[iNorm];
             this->y[this->lastPosCycled] = this->xydata[idy].y[iNorm];
-            //AppendMarker(this->x[this->lastPosCycled], this->y[this->lastPosCycled]);
             this->lastPosCycled = ((this->lastPosCycled + 1 + (buffSize)) % (buffSize));
-            //qDebug()<<this->lastPosCycled;
         }
     }
 }
