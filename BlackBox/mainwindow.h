@@ -50,6 +50,9 @@ public:
   QwtPlotCurveAdvanced* curveCopyTc[PARAMS_IN_PACK];
   t_xydata_live xydataCycled[PARAMS_IN_PACK];  //используеться в plotTC для UpdateCurveToInf
   ///////////////////////////
+  int logScrollValuePer = 0;
+  int logScrollValueXy = 0;
+  ///////////////////////////
   QwtPlotCurveAdvanced  *m_curve[PARAMS_IN_PACK];
 
   qint32 currentXPos;
@@ -161,7 +164,6 @@ private slots:
     void on_lineEdit_BottomTrigger_editingFinished();
     void on_pushButton_TopTrigger_clicked(bool checked);
     void on_pushButton_BottomTrigger_clicked(bool checked);
-    //void on_comboBox_SourceSelect_activated(int index);
     void on_comboBox_SourceSelect_currentIndexChanged(int index);
     void on_comboBox_TriggerSelect_currentIndexChanged(int index);
     void on_lineEdit_FrameWidth_editingFinished();
@@ -169,6 +171,11 @@ private slots:
     void on_verticalScrollBar_Capture_valueChanged(int value);
     void on_toolButton_clicked();
     void on_pushButton_addxy_clicked();
+
+    void on_tabWidget_Charts_currentChanged(int index);
+
+    void SetFileScrollValuePer();
+    void SetFileScrollValueXy();
 
 private:
 

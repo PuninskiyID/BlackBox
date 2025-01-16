@@ -11,7 +11,7 @@
 #include <QLineEdit>
 #include <QLabel>
 
-#define buffSize 64
+#define buffSize 512
 
 
 class XYCurve : public QObject
@@ -42,7 +42,7 @@ private:
 
 public slots:
 
-    void XYParamPick(int id);
+    void XYParamPickWrapper(int id);
     void Delete();
 
 public:
@@ -61,8 +61,8 @@ public:
 
         if (this->pX && this->pY && this->deleteButton)
         {
-            QObject::connect(this->pX, SIGNAL(currentIndexChanged(int)), this, SLOT(XYParamPick(int)));
-            QObject::connect(this->pY, SIGNAL(currentIndexChanged(int)), this, SLOT(XYParamPick(int)));
+            QObject::connect(this->pX, SIGNAL(currentIndexChanged(int)), this, SLOT(XYParamPickWrapper(int)));
+            QObject::connect(this->pY, SIGNAL(currentIndexChanged(int)), this, SLOT(XYParamPickWrapper(int)));
             QObject::connect(this->deleteButton, SIGNAL(clicked()), this, SLOT(Delete()));
         }
         else
@@ -97,7 +97,7 @@ public:
     void SetParentFrameList(QList<QFrame *> *list);
     void SetData(t_xydata_live* newData);
 
-    void StepPickedData(int idx, int idy, int curX);
+    void StepPickedData(int idx, int idy, int curX, int samplesToCheck);
     void RollData();
     QColor GetColor();
     int GetXId();
@@ -105,6 +105,8 @@ public:
 
     double FindDistace(double x1, double y1, double x2, double y2);
     void AppendMarker(double x, double y);
+
+    void XYParamPick(int curX, int samplesToCheck = 128);
 
 };
 

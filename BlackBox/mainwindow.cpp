@@ -440,7 +440,7 @@ void MainWindow::ParcePacket( MotorHndls *motor, quint32 *data, bool useScaledOv
             {
                 for(int index = 0; index < cXYData.Size(); index++)
                 {
-                    //qDebug()<<"xyFromParcePacket";
+                    //qDebug()<<"FromParcePacket "<< motor->currentXPos;
                     cXYData.at(index)->XYParamPick( motor->currentXPos );
                 }
             }
@@ -632,39 +632,41 @@ void MainWindow::fileScrollValueChanged(int position)
     motor->logFile.seek((qint64)position*(qint64)PARAMS_IN_PACK*(qint64)sizeof(float) + (qint64)motor->logFileOffset);
 
     int lineSize = motor->logFile.read((char*)data, X_SIZE*PARAMS_IN_PACK*sizeof(float));
-//    qDebug() << "SliderMover" << position << (position*(qint64)PARAMS_IN_PACK*(qint64)sizeof(float) + (qint64)motor->logFileOffset) << lineSize;
 
     motor->currentXPos=0;
+    int counter = 0;
 
     for(int i=0;i<lineSize/PACKET_SIZE;i++)
     {
         ParcePacket( motor,(quint32*)(data + i*PACKET_SIZE ), 0 );
     }
-
-    for (int i = 0; i < PARAMS_IN_PACK; ++i)
-        if(ctrl->IsChecked(i))
-        {
-            ReAttachTriggerPoints(i);
-            if(ui->comboBox_SourceSelect->currentIndex() > 0 && ui->comboBox_TriggerSelect->currentIndex() > 0)
+    if(ui->tabWidget_Charts->currentIndex() == 0)
+    {
+        for (int i = 0; i < PARAMS_IN_PACK; ++i)
+            if(ctrl->IsChecked(i))
             {
-                UpdateScrolCapture(ui->comboBox_SourceSelect->currentIndex() - 1);
-                RedrawCapture(ui->comboBox_SourceSelect->currentIndex() - 1);
-                UpdateCurvesToInf(ui->comboBox_SourceSelect->currentIndex() - 1);
+                ReAttachTriggerPoints(i);
+                if(ui->comboBox_SourceSelect->currentIndex() > 0 && ui->comboBox_TriggerSelect->currentIndex() > 0)
+                {
+                    UpdateScrolCapture(ui->comboBox_SourceSelect->currentIndex() - 1);
+                    RedrawCapture(ui->comboBox_SourceSelect->currentIndex() - 1);
+                    UpdateCurvesToInf(ui->comboBox_SourceSelect->currentIndex() - 1);
+                }
+            }
+        qwtPlotPer->replot();
+        qwtPlotTc->replot();
+    }
+    else
+    {
+        if(cXYData.Size() > 0)
+        {
+            for(int index = 0; index < cXYData.Size(); index++)
+            {
+                cXYData.at(index)->XYParamPick( motor->currentXPos, (X_SIZE) );
             }
         }
-
-    if(cXYData.Size() > 0)
-    {
-        for(int index = 0; index < cXYData.Size(); index++)
-        {
-            //qDebug()<<motor->currentXPos;
-            //qDebug()<<"xyFromParcePacket";
-            cXYData.at(index)->XYParamPick( motor->currentXPos );
-        }
+        qwtPlotXy->replot();
     }
-    qwtPlotPer->replot();
-    qwtPlotTc->replot();
-    qwtPlotXy->replot();
 }
 
 void MainWindow::on_pushLoggingOn_clicked(bool checked)
@@ -1523,8 +1525,26 @@ void  MainWindow::AddXYFunc(QLabel *cLabel, QFrame *frame, QComboBox *px, QCombo
 }
 
 
+void MainWindow::on_tabWidget_Charts_currentChanged(int index)
+{
+    if(index == 0)
+    {
+        SetFileScrollValuePer();
+    }
+    else
+    {
+        SetFileScrollValueXy();
+    }
+}
 
+void MainWindow::SetFileScrollValuePer()
+{
+    currentMotor->logScrollValueXy = ui->horizontalSlider->value();
+    ui->horizontalSlider->setValue(currentMotor->logScrollValuePer);
+}
 
-
-
-
+void MainWindow::SetFileScrollValueXy()
+{
+    currentMotor->logScrollValuePer = ui->horizontalSlider->value();
+    ui->horizontalSlider->setValue(currentMotor->logScrollValueXy);
+}

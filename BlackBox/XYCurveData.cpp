@@ -33,12 +33,17 @@ void XYCurve::RollData()
     }
 }
 
-void XYCurve::XYParamPick(int curX)
+void XYCurve::XYParamPickWrapper(int curX)
+{
+    XYParamPick(curX);
+}
+
+void XYCurve::XYParamPick(int curX, int samplesToCheck)
 {
     if(this->GetXId() > 0 && this->GetYId() > 0)
     {
         this->curve->detach();
-        this->StepPickedData(GetXId() - 1, GetYId() - 1, curX);
+        this->StepPickedData(GetXId() - 1, GetYId() - 1, curX, samplesToCheck);
         RollData();
         this->curve->setSamples(this->xNorm, this->yNorm, buffSize);
         this->curve->setPen(this->color);
@@ -67,15 +72,14 @@ double XYCurve::FindDistace(double x1, double y1, double x2, double y2)
     return sqrt( pow((int)(x2 - x1),2) + pow((int)(y2 - y1),2) );
 }
 
-void XYCurve::StepPickedData(int idx, int idy, int curX)
+void XYCurve::StepPickedData(int idx, int idy, int curX, int samplesToCheck)
 {
     double dist = this->step->text().toDouble();
     int iNorm = 0;
-    //for (int i = (curX + 1 - 128 + (X_SIZE)) % (X_SIZE); i <= (curX); i = (1 + i) % (X_SIZE))
 
-    for (int i = curX - 128; i < (curX); i++)//128
+    for (int i = curX - samplesToCheck; i < (curX); i++)//128
     {
-        iNorm = (i + (X_SIZE)) % (X_SIZE); // при просмотре лога не имеет смыла сохранять предыдущий экран сэмплов, следовательно возникает визуальный баг.
+        iNorm = (i + (X_SIZE)) % (X_SIZE);
         if( FindDistace(this->xydata[idx].y[iNorm],this->xydata[idy].y[iNorm],
                         this->x[(this->lastPosCycled - 1 ) % (buffSize)],
                         this->y[(this->lastPosCycled - 1 ) % (buffSize)]) > dist)
@@ -86,13 +90,6 @@ void XYCurve::StepPickedData(int idx, int idy, int curX)
         }
     }
 }
-
-//void XYCurve::AppendMarker(double x, double y)
-//{
-//    this->lastPoint->setSymbol(new QwtSymbol(QwtSymbol::Ellipse, QBrush(Qt::black), QPen(this->color), QSize(10, 10)));
-//    this->lastPoint->setValue(QPointF(x,y));
-//    this->lastPoint->attach(this->plot);
-//}
 
 ///////////////////////////////////////////////////////XYCurveData////////////////////////////////////////////////////////////
 
