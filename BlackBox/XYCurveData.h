@@ -38,6 +38,7 @@ private:
     double xNorm[buffSize];
     double yNorm[buffSize];
     int lastPosCycled = 0;
+    bool logState = 0;
     //QwtPlotMarker *lastPoint;
 
 public slots:
@@ -46,7 +47,7 @@ public slots:
     void Delete();
 
 public:
-    XYCurve(QLabel *colorLabel, QComboBox *newPX, QComboBox *newPY, QPushButton *newDelButton, QLineEdit *newStep, QwtPlotAdvanced *newPlot)
+    XYCurve(QLabel *colorLabel, QComboBox *newPX, QComboBox *newPY, QPushButton *newDelButton, QLineEdit *newStep, QwtPlotAdvanced *newPlot, bool newLogState)
     {
         this->color = QColor::fromHsv(QRandomGenerator::global()->bounded(360), 255, 255);
         this->colorShowLabel = colorLabel;
@@ -57,6 +58,7 @@ public:
         this->pY = newPY;
         this->step = newStep;
         this->deleteButton = newDelButton;
+        this->logState = newLogState;
         //this->lastPoint = new QwtPlotMarker;
 
         if (this->pX && this->pY && this->deleteButton)

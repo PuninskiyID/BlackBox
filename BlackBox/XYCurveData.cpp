@@ -35,7 +35,10 @@ void XYCurve::RollData()
 
 void XYCurve::XYParamPickWrapper(int curX)
 {
-    XYParamPick(curX);
+    if(this->logState == false)
+        XYParamPick(curX);
+    else
+        XYParamPick(curX, X_SIZE);
 }
 
 void XYCurve::XYParamPick(int curX, int samplesToCheck)
@@ -105,9 +108,9 @@ void XYCurveData::AddCurve(XYCurve *curve, QFrame *dataFW)
 void XYCurveData::DeleteCurve(int id) ///а надо ли?
 {
     this->data.at(id)->~XYCurve();
-    this->data.removeAt(id);
-    this->dataWindow.at(id)->hide();
-    this->dataWindow.removeAt(id);
+    //this->data.removeAt(id);
+    //this->dataWindow.at(id)->hide();
+    //this->dataWindow.removeAt(id);
 }
 
 void XYCurveData::SetData(int id, double *x[X_SIZE], double *y[X_SIZE])

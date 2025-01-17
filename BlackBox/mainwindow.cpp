@@ -460,7 +460,6 @@ void MainWindow::ParcePacket( MotorHndls *motor, quint32 *data, bool useScaledOv
 
 }
 
-
 void MainWindow::readPendingDatagramsDebug()
 {
     static char udpData[PACKET_SIZE];
@@ -536,8 +535,6 @@ void MainWindow::readPendingDatagramsDebug()
     }
 }
 
-
-
 void MainWindow::on_pushOpenLog_clicked()
 {
 
@@ -609,6 +606,7 @@ void MainWindow::on_pushOpenLog_clicked()
       ui->horizontalSlider->setMaximum(motor->logFile.size()/(sizeof(float)*PARAMS_IN_PACK)-X_SIZE);
       ui->horizontalSlider->setSingleStep( (X_SIZE + 9) / 10 );
       ui->horizontalSlider->setValue(0);
+      ui->horizontalSlider->setEnabled(true);
 
       fileScrollValueChanged(0);
       loadingGif->stop();
@@ -732,12 +730,15 @@ void MainWindow::on_pushAutoscale_clicked(bool checked)
     qwtPlotPer->replot();
 }
 
-
-
 void MainWindow::on_comboMotors_currentIndexChanged(int index)
 {
 
     if (ui->comboMotors->count()==0) return;
+
+    for(int i = 0; i < cXYData.Size(); i++)
+    {
+        cXYData.DeleteCurve(i);
+    }
 
     for(int id = 0; id < PARAMS_IN_PACK; id++)
         if(ctrl->chk[id]->isChecked())
@@ -780,7 +781,14 @@ void MainWindow::on_comboMotors_currentIndexChanged(int index)
     }
 
     if(currentMotor->logFile.isOpen())
+    {
         ui->verticalScrollBar_Capture->setEnabled(true);
+        ui->horizontalSlider->setEnabled(true);
+    }
+    else
+    {
+        ui->horizontalSlider->setEnabled(false);
+    }
 
     qwtPlotPer->replot();
     qwtPlotTc->replot();
@@ -847,7 +855,6 @@ void MainWindow::p_selected_tc(int id, int cheked)
     qwtPlotTc->replot();
 }
 
-
 void MainWindow::on_lineEdit_TopTrigger_editingFinished()
 {
     if(ui->toolButton->isChecked()){
@@ -871,7 +878,6 @@ void MainWindow::on_lineEdit_TopTrigger_editingFinished()
     }
 }
 
-
 void MainWindow::on_lineEdit_BottomTrigger_editingFinished()
 {
     if( currentMotor )
@@ -891,7 +897,6 @@ void MainWindow::on_lineEdit_BottomTrigger_editingFinished()
         qwtPlotTc->replot();
     }
 }
-
 
 void MainWindow::on_pushButton_TopTrigger_clicked( bool checked )
 {
@@ -919,7 +924,6 @@ void MainWindow::on_pushButton_TopTrigger_clicked( bool checked )
         }
     }
 }
-
 
 void MainWindow::on_pushButton_BottomTrigger_clicked( bool checked )
 {
@@ -973,15 +977,16 @@ void MainWindow::RedrawCapture(int index)
 {
     if(index <= 0)
     {
+        qDebug()<<"1";
         UpdateCurvesToDef();
-        qwtPlotTc->resetZoom( QRectF( 0.0, -(ui->lineEdit_FrameHeight->text().toFloat() / 2) ,
-                                      ui->lineEdit_FrameWidth->text().toFloat(), ui->lineEdit_FrameHeight->text().toFloat() ) );
+        qwtPlotTc->resetZoom( QRectF( 0.0, -5000.0, X_SIZE * PER, 10000.0 ) );
         DrawTriggerWindowCenter();
         return;
     }
 
     if(ui->comboBox_TriggerSelect->currentIndex() == 1 )
     {        
+        qDebug()<<"2";
         if(currentMotor->triggerPointsHigh[index]->size() == 0 )
         {
             UpdateCurvesToDef();
@@ -1001,6 +1006,7 @@ void MainWindow::RedrawCapture(int index)
 
     else if(ui->comboBox_TriggerSelect->currentIndex() == 2 )
     {       
+        qDebug()<<"3";
         if( currentMotor->triggerPointsLow[index]->size() == 0 )
         {
             UpdateCurvesToDef();
@@ -1020,9 +1026,11 @@ void MainWindow::RedrawCapture(int index)
 
     else
     {
+        qDebug()<<"4";
         UpdateCurvesToDef();
-        qwtPlotTc->resetZoom( QRectF( 0.0, -(ui->lineEdit_FrameHeight->text().toFloat() / 2) ,
-                                      ui->lineEdit_FrameWidth->text().toFloat(), ui->lineEdit_FrameHeight->text().toFloat() ) );
+        qwtPlotTc->resetZoom( QRectF( 0.0, -5000.0, X_SIZE * PER, 10000.0 ) );
+//        qwtPlotTc->resetZoom( QRectF( 0.0, -(ui->lineEdit_FrameHeight->text().toFloat() / 2) ,
+//                                      ui->lineEdit_FrameWidth->text().toFloat(), ui->lineEdit_FrameHeight->text().toFloat() ) );
         DrawTriggerWindowCenter();
     }
 }
@@ -1075,7 +1083,6 @@ void MainWindow::on_comboBox_TriggerSelect_currentIndexChanged(int index)
     }
 }
 
-
 void MainWindow::on_lineEdit_FrameWidth_editingFinished()
 {
     if(currentMotor)
@@ -1102,7 +1109,6 @@ void MainWindow::on_lineEdit_FrameWidth_editingFinished()
         }
     }
 }
-
 
 void MainWindow::on_lineEdit_FrameHeight_editingFinished()
 {
@@ -1230,7 +1236,6 @@ void MainWindow::ReAttachTriggerPoints(int id)
         for (int i = 0; i < currentMotor->triggerPointsLow[id]->size(); i++)
             currentMotor->triggerPointsLow[id]->at(i)->attach(qwtPlotTc);
 }
-
 
 void MainWindow::on_toolButton_clicked()
 {
@@ -1519,7 +1524,7 @@ void MainWindow::on_pushButton_addxy_clicked()
 void  MainWindow::AddXYFunc(QLabel *cLabel, QFrame *frame, QComboBox *px, QComboBox *py, QLineEdit *step, QPushButton *delButton)   //подумать над генерацией цветов (есть готовый класс colors)
 {
     qDebug()<<px<<py;
-    XYCurve *curveXY = new XYCurve(cLabel, px, py, delButton, step, qwtPlotXy);
+    XYCurve *curveXY = new XYCurve(cLabel, px, py, delButton, step, qwtPlotXy, currentMotor->logFile.isOpen());
     curveXY->SetData(currentMotor->xydata);
     cXYData.AddCurve(curveXY, frame);
 }
@@ -1527,6 +1532,7 @@ void  MainWindow::AddXYFunc(QLabel *cLabel, QFrame *frame, QComboBox *px, QCombo
 
 void MainWindow::on_tabWidget_Charts_currentChanged(int index)
 {
+    if(motors.isEmpty()) return;
     if(index == 0)
     {
         SetFileScrollValuePer();
