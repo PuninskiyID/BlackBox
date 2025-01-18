@@ -12,10 +12,12 @@
 #include <QSplitter>
 #include <QStandardItem>
 #include <QStandardItemModel>
+#include <QThread>
 #include <cmath>
 #include "zipper.h"
 #include "rotated_label.h"
 #include "XYCurveData.h"
+#include "gifrunner.h"
 
 
 /*
@@ -546,12 +548,12 @@ void MainWindow::on_pushOpenLog_clicked()
     ui->label_load->show();
     loadingGif->start();
 
+
      QString fileName;
      fileName = QFileDialog::getOpenFileName(this,tr("Open Log"),QCoreApplication::applicationDirPath() + "\\log-files",
                                              tr("Log Files (*.*);;Log Files (*.zip);;Log Files (*.rar);;Log Files (*.bin)"));
      if( fileName.isNull() || fileName.isEmpty() || !QFile::exists(fileName) )
      {
-         loadingGif->stop();
          ui->label_load->setDisabled(true);
          ui->label_load->hide();
          return;
@@ -578,7 +580,6 @@ void MainWindow::on_pushOpenLog_clicked()
 
      if( fileName.isNull() || fileName.isEmpty() || !QFile::exists(fileName) )
      {
-         loadingGif->stop();
          ui->label_load->setEnabled(false);
          ui->label_load->hide();
          return;
@@ -609,7 +610,6 @@ void MainWindow::on_pushOpenLog_clicked()
       ui->horizontalSlider->setEnabled(true);
 
       fileScrollValueChanged(0);
-      loadingGif->stop();
       ui->label_load->hide();
       ui->label_load->setEnabled(false);
 }
@@ -1554,3 +1554,14 @@ void MainWindow::SetFileScrollValueXy()
     currentMotor->logScrollValuePer = ui->horizontalSlider->value();
     ui->horizontalSlider->setValue(currentMotor->logScrollValueXy);
 }
+
+void MainWindow::on_pushButton_clicked()
+{
+    int size = cXYData.Size();
+    for(int i = size - 1; i >= 0; i--)
+    {
+        cXYData.DeleteCurve(i);
+        qDebug()<<"iter "<<i<<"  size "<< cXYData.Size();;
+    }
+}
+

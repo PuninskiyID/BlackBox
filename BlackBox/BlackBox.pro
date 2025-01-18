@@ -14,6 +14,7 @@ CONFIG += c++17
 
 #LIBS += -LC:/qwt-6.2.0/lib -lqwtd
 
+RC_FILE = blackbox.rc
 
 #qwt------------------------------------------------------------
 

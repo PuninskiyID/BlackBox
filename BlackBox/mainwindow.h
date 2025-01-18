@@ -177,6 +177,8 @@ private slots:
     void SetFileScrollValuePer();
     void SetFileScrollValueXy();
 
+    void on_pushButton_clicked();
+
 private:
 
 };
