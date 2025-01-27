@@ -70,7 +70,6 @@ SOURCES += main.cpp\
     mainwindow.cpp \
     mtab.cpp \
     mpower.cpp \
-    rotated_label.cpp \
     testseq.cpp \
     zipper.cpp\
 
@@ -85,7 +84,6 @@ HEADERS  += mainwindow.h \
     XYCurveData.h \
     mtab.h \
     mpower.h \
-    rotated_label.h \
     testseq.h \
     zipper.h\
 

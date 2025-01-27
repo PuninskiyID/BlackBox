@@ -15,9 +15,8 @@
 #include <QThread>
 #include <cmath>
 #include "zipper.h"
-#include "rotated_label.h"
 #include "XYCurveData.h"
-#include "gifrunner.h"
+
 
 
 /*
@@ -540,7 +539,6 @@ void MainWindow::readPendingDatagramsDebug()
 void MainWindow::on_pushOpenLog_clicked()
 {
 
-    //qDebug()<<QCoreApplication::applicationFilePath();
     QMovie *loadingGif = new QMovie("D:\\cpp\\work\\tms570_ethernet_tools\\Textures\\copium-cat.gif");
 
     ui->label_load->setMovie(loadingGif);
@@ -561,7 +559,7 @@ void MainWindow::on_pushOpenLog_clicked()
 
      if(fileName.contains(".zip"))
      {
-         Zipper::uncompressZipToFolder(fileName, QCoreApplication::applicationDirPath() + "\\log-files\\unziped");
+         Zipper::uncompressZipToFolder(fileName, QCoreApplication::applicationDirPath() + "/log-files/unziped");
 
          fileName.remove(QCoreApplication::applicationDirPath() + "/log-files/");
          fileName.remove(".zip");
@@ -569,7 +567,7 @@ void MainWindow::on_pushOpenLog_clicked()
      }
      else if(fileName.contains(".rar"))
      {
-         Zipper::uncompressRarToFolder(fileName, QCoreApplication::applicationDirPath() + "\\log-files\\unziped");
+         Zipper::uncompressRarToFolder(fileName, QCoreApplication::applicationDirPath() + "/log-files/unziped");
 
          fileName.remove(QCoreApplication::applicationDirPath() + "/log-files/");
          fileName.remove(".rar");
