@@ -1,4 +1,4 @@
-﻿#include "mainwindow.h"
+#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDateTime>
 #include <QDateTime>
@@ -604,6 +604,7 @@ void MainWindow::on_pushOpenLog_clicked()
       QDir fn(fileName);
       ui->horizontalSlider->setMaximum(motor->logFile.size()/(sizeof(float)*PARAMS_IN_PACK)-X_SIZE);
       ui->horizontalSlider->setSingleStep( (X_SIZE + 9) / 10 );
+      //ui->horizontalSlider->setSingleStep( ((sizeof(float)*PARAMS_IN_PACK) + 9)/10 ); //нужен нечет
       ui->horizontalSlider->setValue(0);
       ui->horizontalSlider->setEnabled(true);
 
@@ -614,30 +615,33 @@ void MainWindow::on_pushOpenLog_clicked()
 
 void MainWindow::fileScrollValueChanged(int position)
 {
-    static char data[X_SIZE*PARAMS_IN_PACK*sizeof(float)];
-
-    MotorHndls *motor=idMotorHash[-1];
-
-    if (motor==0) return;
-
-    if (!motor->logFile.isOpen()) return;
-
-    for(int i = 0; i < PARAMS_IN_PACK; i++)
-        motor->highState[i] = false;
-
-    motor->logFile.seek((qint64)position*(qint64)PARAMS_IN_PACK*(qint64)sizeof(float) + (qint64)motor->logFileOffset);
-
-    int lineSize = motor->logFile.read((char*)data, X_SIZE*PARAMS_IN_PACK*sizeof(float));
-
-    motor->currentXPos=0;
-    int counter = 0;
-
-    for(int i=0;i<lineSize/PACKET_SIZE;i++)
-    {
-        ParcePacket( motor,(quint32*)(data + i*PACKET_SIZE ), 0 );
-    }
     if(ui->tabWidget_Charts->currentIndex() == 0)
     {
+        ////////////////////////////////////////////////////////////чтение файла
+        static char data[X_SIZE*PARAMS_IN_PACK*sizeof(float)];
+
+        MotorHndls *motor=idMotorHash[-1];
+
+        if (motor==0) return;
+
+        if (!motor->logFile.isOpen()) return;
+
+        for(int i = 0; i < PARAMS_IN_PACK; i++)
+            motor->highState[i] = false;
+
+        motor->logFile.seek((qint64)position*(qint64)PARAMS_IN_PACK*(qint64)sizeof(float) + (qint64)motor->logFileOffset);
+
+        int lineSize = motor->logFile.read((char*)data, X_SIZE*PARAMS_IN_PACK*sizeof(float));
+
+        motor->currentXPos=0;
+        int counter = 0;
+
+        for(int i=0;i<lineSize/PACKET_SIZE;i++)
+        {
+            ParcePacket( motor,(quint32*)(data + i*PACKET_SIZE ), 0 );
+        }
+
+        ////////////////////////////////////////////////////////////
         for (int i = 0; i < PARAMS_IN_PACK; ++i)
             if(ctrl->IsChecked(i))
             {
@@ -654,6 +658,30 @@ void MainWindow::fileScrollValueChanged(int position)
     }
     else
     {
+
+        ////////////////////////////////////////////////////////////чтение файла
+        static char data[PARAMS_IN_PACK*sizeof(float)];
+
+        MotorHndls *motor=idMotorHash[-1];
+
+        if (motor==0) return;
+
+        if (!motor->logFile.isOpen()) return;
+
+        motor->logFile.seek((qint64)position*(qint64)PARAMS_IN_PACK*(qint64)sizeof(float) + (qint64)motor->logFileOffset);
+
+        int lineSize = motor->logFile.read((char*)data, PARAMS_IN_PACK*sizeof(float));
+
+        motor->currentXPos=0;
+        int counter = 0;
+
+        for(int i=0;i<lineSize/PACKET_SIZE;i++)
+        {
+            ParcePacket( motor,(quint32*)(data + i*PACKET_SIZE ), 0 );
+        }
+
+        ////////////////////////////////////////////////////////////чтение файла
+
         if(cXYData.Size() > 0)
         {
             for(int index = 0; index < cXYData.Size(); index++)
