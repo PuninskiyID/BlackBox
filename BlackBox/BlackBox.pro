@@ -40,18 +40,18 @@ win32 {
 
 #zlib-----------------------------------------------------------
 
-INCLUDEPATH += D:/c++bibles/zlib-1.3.1
-LIBS += -LD:/c++bibles/zlib-1.3.1 -lz
+INCLUDEPATH += D:/cppLibs/zlib-1.3.1
+LIBS += -LD:/cppLibs/zlib-1.3.1 -lz
 
 #quazip---------------------------------------------------------
 
-INCLUDEPATH += D:\c++bibles\quazip\quazip
-LIBS += -LD:\c++bibles\quazip\quazip\release -lquazip
+INCLUDEPATH += D:/cppLibs/quazip/quazip
+LIBS += -LD:/cppLibs/quazip/quazip/release -lquazip
 
 #unrar---------------------------------------------------------
 
-INCLUDEPATH += D:\c++bibles\unrar
-LIBS += -LD:/c++bibles/unrar/x64 -lunrar64
+INCLUDEPATH += D:/cppLibs/unrar
+LIBS += -LD:/cppLibs/unrar/x64 -lunrar64
 
 #---------------------------------------------------------------
 
