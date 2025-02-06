@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>960</width>
-    <height>540</height>
+    <height>566</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -427,7 +427,7 @@
                      <enum>Qt::ScrollBarAlwaysOn</enum>
                     </property>
                     <property name="horizontalScrollBarPolicy">
-                     <enum>Qt::ScrollBarAlwaysOff</enum>
+                     <enum>Qt::ScrollBarAsNeeded</enum>
                     </property>
                     <property name="sizeAdjustPolicy">
                      <enum>QAbstractScrollArea::AdjustIgnored</enum>
@@ -443,8 +443,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>371</width>
-                       <height>84</height>
+                       <width>350</width>
+                       <height>83</height>
                       </rect>
                      </property>
                      <property name="sizePolicy">
@@ -474,7 +474,7 @@
                 <enum>QTabWidget::Rounded</enum>
                </property>
                <property name="currentIndex">
-                <number>2</number>
+                <number>1</number>
                </property>
                <property name="elideMode">
                 <enum>Qt::ElideNone</enum>
@@ -521,8 +521,8 @@
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>363</width>
-                      <height>252</height>
+                      <width>342</width>
+                      <height>277</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_8">
@@ -634,9 +634,9 @@
                     <property name="geometry">
                      <rect>
                       <x>0</x>
-                      <y>-18</y>
-                      <width>363</width>
-                      <height>270</height>
+                      <y>0</y>
+                      <width>342</width>
+                      <height>277</height>
                      </rect>
                     </property>
                     <property name="sizePolicy">
@@ -991,8 +991,8 @@
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>363</width>
-                      <height>219</height>
+                      <width>342</width>
+                      <height>244</height>
                      </rect>
                     </property>
                     <property name="layoutDirection">

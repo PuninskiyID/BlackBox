@@ -55,8 +55,6 @@ mPower::mPower(QWidget *parent) :  QWidget(parent),  ui(new Ui::mPower)
 
         plots[i]->setAxisScale(QwtPlot::yLeft,p_limit[i][0],p_limit[i][1],0);
         plots[i]->setAxisScale(QwtPlot::xBottom,0,X_MAX_POWER,0);
-        plots[i]->setMinimumHeight(0);
-        plots[i]->setMaximumHeight(150);
 
         plots[i]->zoomer = new QwtPlotZoomer(plots[i]->canvas());
         plots[i]->zoomer->setMousePattern(QwtEventPattern::MouseSelect2,Qt::RightButton, Qt::ControlModifier);
@@ -79,6 +77,8 @@ mPower::mPower(QWidget *parent) :  QWidget(parent),  ui(new Ui::mPower)
         plots[i]->grid->setMajorPen( QPen( Qt::darkGray, 0, Qt::DotLine ) );
         plots[i]->grid->setMinorPen( QPen( Qt::darkGray, 0 , Qt::DotLine ) );
         plots[i]->grid->attach(plots[i]);
+
+        plots[i]->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Ignored);
 
         ui->gridLayout->addWidget(plots[i],i/2,i%2);
 

@@ -62,9 +62,6 @@ public:
     }
 
     ~CentralWidget();
-//    {
-//        delete ui;
-//    }
 
     Ui::CentralWidget *ui;
 

@@ -1,11 +1,9 @@
 #include "mtab.h"
 #include <string.h>
+#include <QLineEdit>
 
 mTab::mTab()
 {
-
-      //  QFont arial("Arial", 7);
-      //  arial.setBold(true);
 
         grid = new QGridLayout();
         grid->setMargin(0);
@@ -14,40 +12,31 @@ mTab::mTab()
 
         btn_enable = 0;
 
-        /*
-        btn_enable = new QPushButton("En",this);
-        btn_enable->setCheckable(true);
-        connect(btn_enable,SIGNAL(clicked(bool)),this,SLOT(on_Enable_clicked(bool)));
-        grid->addWidget(btn_enable,1,0,1,4);
-        */
-
         for (int i=0;i<PARAMS_IN_PACK;i++)
         {
             lab[i] = 0;
-            val[i]= new QLabel("0");
+            val[i]= new QLineEdit("0");
+            val[i]->setReadOnly(true);
             QFont arial("Arial", 7);
             arial.setBold(true);
             val[i]->setFont(arial);
-            val[i]->setMinimumWidth(30);
-            //val[i]->setMaximumHeight(30);
-            val[i]->setAlignment(Qt::AlignRight|Qt::AlignHCenter);
+            val[i]->setMinimumWidth(100);
+            val[i]->setAlignment(Qt::AlignRight);
 
 
             chk[i]= new QPushButton(QString("P %1").arg(i),this);
             chk[i]->setCheckable(true);
-            //chk[i]->setMaximumHeight(20);
-            chk[i]->setMaximumWidth(100);
+            chk[i]->setMinimumHeight(25);
+            chk[i]->setMinimumWidth(100);
 
-           // chk[i]->setFont(arial);
             chk[i]->setStyleSheet(QString().sprintf("color : #%02x%02x%02x",col[i].red(),col[i].green(),col[i].blue()));
             connect(chk[i],SIGNAL(clicked(bool)),this,SLOT(chkStateChanged(bool)));
+            chk[i]->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored);
+            val[i]->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored);
 
             grid->addWidget( chk[i],2+ i%16,0+2*(i/16));
             grid->addWidget( val[i],2+ i%16,1+2*(i/16));
 
-
-//            grid->addWidget( chk[i],2+ i,0);
-//            grid->addWidget( val[i],2+ i,1);
         }
         setLayout(grid);
 }

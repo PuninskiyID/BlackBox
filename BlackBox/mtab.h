@@ -37,7 +37,7 @@ class mTab : public QWidget
     QPushButton *btn_enable;
 
 public:
-    QLabel *val[PARAMS_IN_PACK];
+    QLineEdit *val[PARAMS_IN_PACK];
     QPushButton *chk[PARAMS_IN_PACK];
     QLineEdit *signal_scale[PARAMS_IN_PACK];
     void SetLab(int id, double val);
