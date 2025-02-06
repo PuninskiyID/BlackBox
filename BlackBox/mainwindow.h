@@ -61,10 +61,10 @@ public:
         init();
     }
 
-    ~CentralWidget()
-    {
-        delete ui;
-    }
+    ~CentralWidget();
+//    {
+//        delete ui;
+//    }
 
     Ui::CentralWidget *ui;
 
