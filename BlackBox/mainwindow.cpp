@@ -287,7 +287,6 @@ void CentralWidget::on_pushAutoscale_clicked(bool checked)
 
 void CentralWidget::on_pushResetScale_clicked()
 {
-    qDebug()<<"Reset";
         qwtPlotPer->resetZoom( QRectF( 0.0, -5000.0, X_SIZE * PER, 10000.0 ) );
     //    qwtPlotPer->setAxisScale(QwtPlot::yLeft,-5000,5000,0);
     //    qwtPlotPer->setAxisScale(QwtPlot::xBottom,0,X_SIZE * 0.0000625,0);
@@ -361,7 +360,6 @@ void CentralWidget::RedrawCapture(int index)
 {
     if(index <= 0)
     {
-        qDebug()<<"1";
         UpdateCurvesToDef();
         qwtPlotTc->resetZoom( QRectF( 0.0, -5000.0, X_SIZE * PER, 10000.0 ) );
         DrawTriggerWindowCenter();
@@ -370,7 +368,6 @@ void CentralWidget::RedrawCapture(int index)
 
     if(ui->comboBox_TriggerSelect->currentIndex() == 1 )
     {
-        qDebug()<<"2";
         if(currentMotor->triggerPointsHigh[index]->size() == 0 )
         {
             UpdateCurvesToDef();
@@ -390,7 +387,6 @@ void CentralWidget::RedrawCapture(int index)
 
     else if(ui->comboBox_TriggerSelect->currentIndex() == 2 )
     {
-        qDebug()<<"3";
         if( currentMotor->triggerPointsLow[index]->size() == 0 )
         {
             UpdateCurvesToDef();
@@ -410,7 +406,6 @@ void CentralWidget::RedrawCapture(int index)
 
     else
     {
-        qDebug()<<"4";
         UpdateCurvesToDef();
         qwtPlotTc->resetZoom( QRectF( 0.0, -5000.0, X_SIZE * PER, 10000.0 ) );
 //        qwtPlotTc->resetZoom( QRectF( 0.0, -(ui->lineEdit_FrameHeight->text().toFloat() / 2) ,
@@ -507,7 +502,6 @@ void CentralWidget::on_comboMotors_currentIndexChanged(int index)
         previousMotor = currentMotor;
 
         const char v=(char)ui->spinBox->value();
-        qDebug()<<ui->spinBox->value();
         QUdpSocket().writeDatagram(&v,currentMotor->motorAddress.ip,P_UDP_MIN_DBG_NAMES_M+currentMotor->motorAddress.id);
 }
 
@@ -768,7 +762,6 @@ int  CentralWidget::isExistMotor(QHostAddress *address)
 
 void CentralWidget::ParcePacket( MotorHndls *motor, quint32 *data, bool useScaledOverrun = 1 )
 {
-    //qDebug()<<"parsePack";
     quint32 hostByteOrder;
     float *hostFloatValue;
     static qint32 window_size=20000;
@@ -801,7 +794,6 @@ void CentralWidget::ParcePacket( MotorHndls *motor, quint32 *data, bool useScale
             {
                 for(int index = 0; index < cXYData.Size(); index++)
                 {
-                    //qDebug()<<"FromParcePacket "<< motor->currentXPos;
                     cXYData.at(index)->XYParamPick( motor->currentXPos );
                 }
             }
@@ -1002,7 +994,6 @@ void CentralWidget::UpdateTriggerPointsOnline( MotorHndls* motor, int id )
             motor->currentOnlineTriggerPosLow[id] += 1;
         }
         if(SortAndAddTriggersOnline( currentMotor, id, realXPos )){
-            //qDebug()<<currentMotor->currentOnlineTriggerPos[id];
             OnlineRedrawCapture( ui->comboBox_SourceSelect->currentIndex() - 1 );
         }
     }
@@ -1220,6 +1211,11 @@ void CentralWidget::init()
     lastUpdateCurve = new QwtPlotCurveAdvanced();
 
     ui->tabWidget->setMinimumSize( QSize(400, 400) );
+
+    ui->splitter_2->setStretchFactor(0,5);
+    ui->splitter_2->setStretchFactor(1,0);
+    ui->splitter_tools->setStretchFactor(0,3);
+    ui->splitter_tools->setStretchFactor(1,1);
 
     cXYData = XYCurveData();
 
@@ -1521,7 +1517,6 @@ void CentralWidget::on_pushButton_addxy_clicked()
 
 void  CentralWidget::AddXYFunc(QLabel *cLabel, QFrame *frame, QComboBox *px, QComboBox *py, QLineEdit *step, QPushButton *delButton)   //подумать над генерацией цветов (есть готовый класс colors)
 {
-    qDebug()<<px<<py;
     XYCurve *curveXY = new XYCurve(cLabel, px, py, delButton, step, qwtPlotXy, currentMotor->logFile.isOpen());
     curveXY->SetData(currentMotor->xydata);
     cXYData.AddCurve(curveXY, frame);
@@ -1561,7 +1556,6 @@ void CentralWidget::on_pushButton_clicked()
     for(int i = size - 1; i >= 0; i--)
     {
         cXYData.DeleteCurve(i);
-        qDebug()<<"iter "<<i<<"  size "<< cXYData.Size();;
     }
 }
 

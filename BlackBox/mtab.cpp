@@ -136,7 +136,7 @@ unsigned int mTab::ReadNamesFromFile(QFile& file)
     {
         file.read((char*)&s, sizeof(s));
         chk[i]->setText(s.name);
-        qDebug()<<s.name;
+        //qDebug()<<s.name;
     }
 
     return PARAMS_IN_PACK * sizeof(s) + sizeof(mn);
