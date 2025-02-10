@@ -250,6 +250,8 @@ void CentralWidget::fileScrollValueChanged(int position)
                 }
             }
         qwtPlotPer->replot();
+
+        //qwtPlotTc->setAxisAutoScale(QwtPlot::yLeft,1);
         qwtPlotTc->replot();
     }
     else
@@ -268,7 +270,47 @@ void CentralWidget::fileScrollValueChanged(int position)
 
 void CentralWidget::on_pushLoggingOn_clicked()
 {
+    if (ui->pushLoggingOn->isChecked())
+        {
+            qDebug()<<"LogOn";
+            for (int i=0;i<motors.size();i++)
+            {
+                if (motors[i]->motorAddress.id==-1)
+                    continue;
+                if (motors[i]->logFile.isOpen())
+                    motors[i]->logFile.close();
+                QString fileName =
+                        QCoreApplication::applicationDirPath() + "\\log-files\\" +
+                        QDateTime::currentDateTime().toString("log-yy-MM-dd-hh-mm-ss_") +
+                        QString("m%1.bin").arg(motors[i]->motorAddress.id);
+                qDebug() << "Log On " << fileName;
+                motors[i]->logFile.setFileName( fileName );
+                motors[i]->logFile.open(QIODevice::WriteOnly);
+                if(motors[i]->logFile.isOpen())
+                {
+                    ctrl->WriteNamesToFile(motors[i]->logFile);
+                }
+                MotorDebug(motors[i]->motorAddress.id,true);
+            }
+        }
+        else
+        {
+            qDebug()<<"LogOff";
+            for (int i=0;i<motors.size();i++)
+            {
+               MotorDebug(motors[i]->motorAddress.id,false);
+               motors[i]->logFile.close();
 
+               QString folderPath = Zipper::createFolderAndMoveFile(motors[i]->logFile.fileName());
+               qDebug()<< folderPath;
+               //Zipper::compressFolderToZip(folderPath, QCoreApplication::applicationDirPath() + "/log-files");
+               Zipper::compressFolderToZip(folderPath, folderPath + ".zip");
+            }
+            if(currentMotor)
+            {
+                MotorDebug(currentMotor->motorAddress.id,true);
+            }
+        }
 }
 
 
@@ -288,9 +330,11 @@ void CentralWidget::on_pushAutoscale_clicked(bool checked)
 void CentralWidget::on_pushResetScale_clicked()
 {
         qwtPlotPer->resetZoom( QRectF( 0.0, -5000.0, X_SIZE * PER, 10000.0 ) );
+        qwtPlotTc->resetZoom( QRectF( 0.0, -5000.0, X_SIZE * PER, 10000.0 ) );
     //    qwtPlotPer->setAxisScale(QwtPlot::yLeft,-5000,5000,0);
     //    qwtPlotPer->setAxisScale(QwtPlot::xBottom,0,X_SIZE * 0.0000625,0);
         qwtPlotPer->replot();
+        qwtPlotTc->replot();
      //   x_scaled0=qwtPlotPer->canvasMap(QwtPlot::xBottom).s1();
      //   x_scaled1=qwtPlotPer->canvasMap(QwtPlot::xBottom).s2();
 }
@@ -680,13 +724,6 @@ void CentralWidget::readPendingDatagramsDebug()
            qwtPlotPer->replot();
            qwtPlotXy->replot();
 
-           if ( !ui->pushDrawMode->isChecked() )
-           {
-               for (int i=0;i<PARAMS_IN_PACK;i++)
-               {
-                   ctrl->SetLab(i,motor->xydata[i].y[motor->currentXPos-1]);
-               }
-           }
        }
 
     }
