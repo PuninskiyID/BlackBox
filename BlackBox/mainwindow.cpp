@@ -82,6 +82,9 @@ MainWindow::MainWindow(QWidget *parent) : QGoodWindow(parent)
 #ifdef QGOODWINDOW
     m_good_central_widget->setTitleAlignment(Qt::AlignCenter);
 #endif
+
+    m_central_widget->analysisAgent = new AnalysisAgent();
+    m_central_widget->filterAgent = new FilterAgent();
 }
 
 MainWindow::~MainWindow()
@@ -782,9 +785,11 @@ void CentralWidget::UpdateParNamesCombo()
 {
     ui->comboBox_SourceSelect->clear();
     ui->comboBox_SourceSelect->addItem( "None" );
+    ui->analysisSignalName->clear();
     for( int i = 0; i < PARAMS_IN_PACK; i++ )
     {
         ui->comboBox_SourceSelect->addItem( ctrl->chk[i]->text() );
+        ui->analysisSignalName->addItem(ctrl->chk[i]->text());
     }
 }
 
@@ -1161,7 +1166,7 @@ void CentralWidget::init()
     wpwr->setLayout(pwrLay);
     pwr = new mPower(ui->tabWidget);
     pwrLay->addWidget(pwr);
-    ui->tabWidget->addTab(wpwr,"Power Meter");
+    //ui->tabWidget->addTab(wpwr,"Power Meter");
 
     ui->tabWidget;
     //ctrl = new mTab(ui->scrollArea_paramButtons);
@@ -1646,4 +1651,75 @@ CentralWidget::~CentralWidget()
 
     delete ui;
 };
+
+
+void CentralWidget::on_makeAnalysisButton_clicked()
+{
+    auto& motor = currentMotor;
+
+    //FIND SELECTED CURVE IN MOTOR CURVES
+    int dataIndex = ui->analysisSignalName->currentIndex();
+    int i=ui->analysisTypeBox->currentIndex();
+
+    if(usingFiltering){
+        analysisAgent->data = filterAgent->result;
+    }
+    else{
+        analysisAgent->data = motor->xydata[dataIndex].y;
+    }
+    if(usingAnalyse){
+        motor->analysedCurve->detach();
+    }
+    if(i>0){
+        auto curve = qwtPlotPer->addCurve("Analysed");
+        motor->analysedCurve = curve;
+
+        analysisAgent->Analyse(ui->analysisTypeBox->currentText(), 10);
+
+        ui->analysisResultLabel->setText(analysisAgent->analysisResult);
+
+        motor->analysedCurve->setRawSamples( motor->xydata[i].x, analysisAgent->result, X_SIZE );
+        QColor color;
+        color.setRgb(255, 1, 1);
+        motor->analysedCurve->setPen(color);
+        motor->analysedCurve->attach(qwtPlotPer, 1);
+        usingAnalyse = true;
+    }
+    else{
+        usingAnalyse = false;
+    }
+    qwtPlotPer->replot();
+}
+
+
+void CentralWidget::on_filterTypeSelectBox_currentTextChanged(const QString &arg1)
+{
+    auto& motor = currentMotor;
+
+    int dataIndex = ui->analysisSignalName->currentIndex();
+    int i=ui->filterTypeSelectBox->findText(arg1, Qt::MatchCaseSensitive);
+
+    if(usingFiltering){
+        motor->filteredCurve->detach();
+    }
+    if(i>0)
+    {
+        auto curve = qwtPlotPer->addCurve("Filtered");
+        motor->filteredCurve = curve;
+
+        filterAgent->data = motor->xydata[dataIndex].y;
+        filterAgent->Filter(arg1, (double)0.7, (double)5);
+
+        motor->filteredCurve->setRawSamples(motor->xydata[dataIndex].x, filterAgent->result, X_SIZE );
+        QColor color;
+        color.setRgb(255,255,255);
+        motor->filteredCurve->setPen(color);
+        motor->filteredCurve->attach(qwtPlotPer, 0);
+        usingFiltering = true;
+    }else{
+        usingFiltering = false;
+    }
+    qwtPlotPer->replot();
+
+}
 

@@ -8,6 +8,8 @@
 #include <QGoodCentralWidget>
 
 #include "XYCurveData.h"
+#include "analysisagent.h"
+#include "filteragent.h"
 #include "mpower.h"
 #include "mtab.h"
 #include "common.h"
@@ -38,6 +40,8 @@ public:
   int logScrollValueXy = 0;
 
   QwtPlotCurveAdvanced  *m_curve[PARAMS_IN_PACK];
+  QwtPlotCurveAdvanced *filteredCurve;
+  QwtPlotCurveAdvanced *analysedCurve;
 
   qint32 currentXPos;
   double motorRpm;
@@ -59,6 +63,9 @@ public:
     {
         ui->setupUi(this);
         init();
+
+
+        //system("python script.py");
     }
 
     ~CentralWidget();
@@ -89,6 +96,8 @@ public:
     Colors col;
 
     double x_scaled0,x_scaled1;
+    bool usingFiltering = false;
+    bool usingAnalyse = false;
 
     int AddMotor(QHostAddress *address,int id);
     int  isExistMotor(QHostAddress *address);
@@ -120,6 +129,9 @@ public:
     void SetFileScrollValuePer();
     void SetFileScrollValueXy();
 
+
+    FilterAgent* filterAgent;
+    AnalysisAgent* analysisAgent;
 
 private slots:
     void p_selected(int,int);
@@ -170,6 +182,10 @@ private slots:
     void on_pushButton_clicked();
 
     void on_tabWidget_Charts_currentChanged(int index);
+
+    void on_makeAnalysisButton_clicked();
+
+    void on_filterTypeSelectBox_currentTextChanged(const QString &arg1);
 
 private:
     void init();
